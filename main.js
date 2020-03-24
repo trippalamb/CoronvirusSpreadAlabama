@@ -88,7 +88,7 @@ function drawPlot(csv, counties, redraw, dateHeader, max){
                   lat: 32.5,
                   lon: -86.9023
                 },
-                zoom:6.7 
+                zoom:6.0 
             }
         }
 
