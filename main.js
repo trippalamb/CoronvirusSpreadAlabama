@@ -1,8 +1,8 @@
 function main(){
 
-    Plotly.d3.json('http://trippalamb.com/CoronvirusSpreadAlabama/AlabamaCounties.json', function(counties) {
+    Plotly.d3.json('http://trippalamb.com/coronavirus-spread-alabama/AlabamaCounties.json', function(counties) {
 
-        Plotly.d3.csv('http://trippalamb.com/CoronvirusSpreadAlabama/AlabamaCounties_TotalCases.csv', function(err, csv){
+        Plotly.d3.csv('http://trippalamb.com/coronavirus-spread-alabama/AlabamaCounties_TotalCases.csv', function(err, csv){
 
             var numberOfDays = Object.keys(csv[0]).length - 2;
             $("#date-slider").attr('max', numberOfDays);
