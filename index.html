@@ -2,34 +2,192 @@
 <html style="width:98%;height:98%">
 <head>
     <title>Interactive CoronaVirus Map</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/style.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="main.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="./app/main.js"></script>
 </head>
 
-<body style="width:100%;height:100%">
-    <p>
-        This is a map of coronavirus spread through counties in Alabama. Use the slider or the left and right arrows to move days ahead or days back in time. 
-        The max of the total scale is current highest number in a single county, whereas the max of the individual scale is the max of the day you have selected.
-        I have also fixed the bug where it resets your zoom and center point when you change days. 
-        It's a little fragile, so be gentle. If this ends up getting usage, I'll keep updating it. - Tripp
-    </p>
-
-    <button type="button" id="move-back" style="display:block;float:left">&lt;---</button>
-    <div class="slidecontainer" style="display:block;float:left">
-        <input type="range" min="1" max="1" value="1" class="slider" id="date-slider" >
-    </div>
-    <button type="button" id="move-forward">---&gt;</button>
-
-    <br>
-    <br>
-
-    <input type="radio" id="radio-totalScale" name="radio-scale" value="totalScale" checked>
-    <label for="radio-totalScale">Total Scale</label><br>
-    <input type="radio" id="radio-individualScale" name="radio-scale" value="individualScale">
-    <label for="radio-individualScale">Individual Scale</label><br>
+<body class="container-fluid" style="height:100%">
+    <div class="row" style="height:100%">
+        <div id="map-container" class="col-9">
+            
+        
+            <div id="date-slider-container">
+                <button type="button" id="move-back" style="display:block;float:left">
+                    <svg class="bi bi-caret-left" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M10 12.796L4.519 8 10 3.204v9.592zm-.659.753l-5.48-4.796a1 1 0 010-1.506l5.48-4.796A1 1 0 0111 3.204v9.592a1 1 0 01-1.659.753z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+                <div class="slidecontainer" style="display:block;float:left">
+                    <input type="range" min="1" max="1" value="1" class="slider custom-range" id="date-slider" >
+                </div>
+                <button type="button" id="move-forward">
+                    <svg class="bi bi-caret-right" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M6 12.796L11.481 8 6 3.204v9.592zm.659.753l5.48-4.796a1 1 0 000-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 001.659.753z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="container" style="width:100%;height:90%"></div>
+        </div>
     
-    <div id="container" style="width:100%;height:90%"></div>
+        <div id="sidebar" class="col-3">
+            <div id="toolbar">
+                <button type="button" class="btn btn-primary inline" data-toggle="modal" data-target="#toolsModal">Tools</button>
+                <button type="button" class="btn btn-primary inline" data-toggle="modal" data-target="#aboutModal">About</button>
+                <a class="nav-link px-1 mx-1 py-3 my-n2 inline" href="https://github.com/trippalamb/coronavirus-spread-alabama" target="_blank" rel="noopener" aria-label="GitHub">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" class="navbar-nav-svg" viewBox="0 0 512 499.36" role="img"><title>GitHub</title><path fill="currentColor" fill-rule="evenodd" d="M256 0C114.64 0 0 114.61 0 256c0 113.09 73.34 209 175.08 242.9 12.8 2.35 17.47-5.56 17.47-12.34 0-6.08-.22-22.18-.35-43.54-71.2 15.49-86.2-34.34-86.2-34.34-11.64-29.57-28.42-37.45-28.42-37.45-23.27-15.84 1.73-15.55 1.73-15.55 25.69 1.81 39.21 26.38 39.21 26.38 22.84 39.12 59.92 27.82 74.5 21.27 2.33-16.54 8.94-27.82 16.25-34.22-56.84-6.43-116.6-28.43-116.6-126.49 0-27.95 10-50.8 26.35-68.69-2.63-6.48-11.42-32.5 2.51-67.75 0 0 21.49-6.88 70.4 26.24a242.65 242.65 0 0 1 128.18 0c48.87-33.13 70.33-26.24 70.33-26.24 14 35.25 5.18 61.27 2.55 67.75 16.41 17.9 26.31 40.75 26.31 68.69 0 98.35-59.85 120-116.88 126.32 9.19 7.9 17.38 23.53 17.38 47.41 0 34.22-.31 61.83-.31 70.23 0 6.85 4.61 14.81 17.6 12.31C438.72 464.97 512 369.08 512 256.02 512 114.62 397.37 0 256 0z"></path></svg>
+                  </a>
+                  <a class="nav-link px-1 mx-1 py-3 my-n2 inline" href="https://twitter.com/RealTrippLamb" target="_blank" rel="noopener" aria-label="Twitter">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" class="navbar-nav-svg" viewBox="0 0 512 416.32" role="img"><title>Twitter</title><path fill="currentColor" d="M160.83 416.32c193.2 0 298.92-160.22 298.92-298.92 0-4.51 0-9-.2-13.52A214 214 0 0 0 512 49.38a212.93 212.93 0 0 1-60.44 16.6 105.7 105.7 0 0 0 46.3-58.19 209 209 0 0 1-66.79 25.37 105.09 105.09 0 0 0-181.73 71.91 116.12 116.12 0 0 0 2.66 24c-87.28-4.3-164.73-46.3-216.56-109.82A105.48 105.48 0 0 0 68 159.6a106.27 106.27 0 0 1-47.53-13.11v1.43a105.28 105.28 0 0 0 84.21 103.06 105.67 105.67 0 0 1-47.33 1.84 105.06 105.06 0 0 0 98.14 72.94A210.72 210.72 0 0 1 25 370.84a202.17 202.17 0 0 1-25-1.43 298.85 298.85 0 0 0 160.83 46.92"></path></svg>
+                  </a>
+            </div>
+            
+
+            <div id="data-options">
+                
+                <br>
+                <input type="radio" id="radio-totalScale" name="radio-scale" value="totalScale" checked>
+                <label for="radio-totalScale">Total Scale</label><br>
+                <input type="radio" id="radio-individualScale" name="radio-scale" value="individualScale">
+                <label for="radio-individualScale">Individual Scale</label><br>
+                
+            </div>
+
+            <div id="county-data">
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">County Name</th>
+                        <th scope="col">Number of Cases</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="Autauga-Row"><th scope="row">Autauga</th><td>0</td></tr>
+                        <tr id="Baldwin-Row"><th scope="row">Baldwin</th><td>0</td></tr>
+                        <tr id="Barbour-Row"><th scope="row">Barbour</th><td>0</td></tr>
+                        <tr id="Bibb-Row"><th scope="row">Bibb</th><td>0</td></tr>
+                        <tr id="Blount-Row"><th scope="row">Blount</th><td>0</td></tr>
+                        <tr id="Bullock-Row"><th scope="row">Bullock</th><td>0</td></tr>
+                        <tr id="Butler-Row"><th scope="row">Butler</th><td>0</td></tr>
+                        <tr id="Calhoun-Row"><th scope="row">Calhoun</th><td>0</td></tr>
+                        <tr id="Chambers-Row"><th scope="row">Chambers</th><td>0</td></tr>
+                        <tr id="Cherokee-Row"><th scope="row">Cherokee</th><td>0</td></tr>
+                        <tr id="Chilton-Row"><th scope="row">Chilton</th><td>0</td></tr>
+                        <tr id="Choctaw-Row"><th scope="row">Choctaw</th><td>0</td></tr>
+                        <tr id="Clarke-Row"><th scope="row">Clarke</th><td>0</td></tr>
+                        <tr id="Clay-Row"><th scope="row">Clay</th><td>0</td></tr>
+                        <tr id="Cleburne-Row"><th scope="row">Cleburne</th><td>0</td></tr>
+                        <tr id="Coffee-Row"><th scope="row">Coffee</th><td>0</td></tr>
+                        <tr id="Colbert-Row"><th scope="row">Colbert</th><td>0</td></tr>
+                        <tr id="Conecuh-Row"><th scope="row">Conecuh</th><td>0</td></tr>
+                        <tr id="Coosa-Row"><th scope="row">Coosa</th><td>0</td></tr>
+                        <tr id="Covington-Row"><th scope="row">Covington</th><td>0</td></tr>
+                        <tr id="Crenshaw-Row"><th scope="row">Crenshaw</th><td>0</td></tr>
+                        <tr id="Cullman-Row"><th scope="row">Cullman</th><td>0</td></tr>
+                        <tr id="Dale-Row"><th scope="row">Dale</th><td>0</td></tr>
+                        <tr id="Dallas-Row"><th scope="row">Dallas</th><td>0</td></tr>
+                        <tr id="DeKalb-Row"><th scope="row">DeKalb</th><td>0</td></tr>
+                        <tr id="Elmore-Row"><th scope="row">Elmore</th><td>0</td></tr>
+                        <tr id="Escambia-Row"><th scope="row">Escambia</th><td>0</td></tr>
+                        <tr id="Etowah-Row"><th scope="row">Etowah</th><td>0</td></tr>
+                        <tr id="Fayette-Row"><th scope="row">Fayette</th><td>0</td></tr>
+                        <tr id="Franklin-Row"><th scope="row">Franklin</th><td>0</td></tr>
+                        <tr id="Geneva-Row"><th scope="row">Geneva</th><td>0</td></tr>
+                        <tr id="Greene-Row"><th scope="row">Greene</th><td>0</td></tr>
+                        <tr id="Hale-Row"><th scope="row">Hale</th><td>0</td></tr>
+                        <tr id="Henry-Row"><th scope="row">Henry</th><td>0</td></tr>
+                        <tr id="Houston-Row"><th scope="row">Houston</th><td>0</td></tr>
+                        <tr id="Jackson-Row"><th scope="row">Jackson</th><td>0</td></tr>
+                        <tr id="Jefferson-Row"><th scope="row">Jefferson</th><td>0</td></tr>
+                        <tr id="Lamar-Row"><th scope="row">Lamar</th><td>0</td></tr>
+                        <tr id="Lauderdale-Row"><th scope="row">Lauderdale</th><td>0</td></tr>
+                        <tr id="Lawrence-Row"><th scope="row">Lawrence</th><td>0</td></tr>
+                        <tr id="Lee-Row"><th scope="row">Lee</th><td>0</td></tr>
+                        <tr id="Limestone-Row"><th scope="row">Limestone</th><td>0</td></tr>
+                        <tr id="Lowndes-Row"><th scope="row">Lowndes</th><td>0</td></tr>
+                        <tr id="Macon-Row"><th scope="row">Macon</th><td>0</td></tr>
+                        <tr id="Madison-Row"><th scope="row">Madison</th><td>0</td></tr>
+                        <tr id="Marengo-Row"><th scope="row">Marengo</th><td>0</td></tr>
+                        <tr id="Marion-Row"><th scope="row">Marion</th><td>0</td></tr>
+                        <tr id="Marshall-Row"><th scope="row">Marshall</th><td>0</td></tr>
+                        <tr id="Mobile-Row"><th scope="row">Mobile</th><td>0</td></tr>
+                        <tr id="Monroe-Row"><th scope="row">Monroe</th><td>0</td></tr>
+                        <tr id="Montgomery-Row"><th scope="row">Montgomery</th><td>0</td></tr>
+                        <tr id="Morgan-Row"><th scope="row">Morgan</th><td>0</td></tr>
+                        <tr id="Perry-Row"><th scope="row">Perry</th><td>0</td></tr>
+                        <tr id="Pickens-Row"><th scope="row">Pickens</th><td>0</td></tr>
+                        <tr id="Pike-Row"><th scope="row">Pike</th><td>0</td></tr>
+                        <tr id="Randolph-Row"><th scope="row">Randolph</th><td>0</td></tr>
+                        <tr id="Russell-Row"><th scope="row">Russell</th><td>0</td></tr>
+                        <tr id="Shelby-Row"><th scope="row">Shelby</th><td>0</td></tr>
+                        <tr id="St.-Clair-Row"><th scope="row">St. Clair</th><td>0</td></tr>
+                        <tr id="Sumter-Row"><th scope="row">Sumter</th><td>0</td></tr>
+                        <tr id="Talladega-Row"><th scope="row">Talladega</th><td>0</td></tr>
+                        <tr id="Tallapoosa-Row"><th scope="row">Tallapoosa</th><td>0</td></tr>
+                        <tr id="Tuscaloosa-Row"><th scope="row">Tuscaloosa</th><td>0</td></tr>
+                        <tr id="Walker-Row"><th scope="row">Walker</th><td>0</td></tr>
+                        <tr id="Washington-Row"><th scope="row">Washington</th><td>0</td></tr>
+                        <tr id="Wilcox-Row"><th scope="row">Wilcox</th><td>0</td></tr>
+                        <tr id="Winston-Row"><th scope="row">Winston</th><td>0</td></tr>
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="modal fade" id="toolsModal" tabindex="-1" role="dialog" aria-labelledby="toolsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="toolsModalLabel">Tools</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    This is a map of coronavirus spread through counties in Alabama. Use the slider or the left and right arrows to move days ahead or days back in time. 
+                    The max of the total scale is current highest number in a single county, whereas the max of the individual scale is the max of the day you have selected.
+                </p>
+                
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="aboutModalLabel">About</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <h5>Update: 2020-03-24</h5>
+                <p>
+                    I have also fixed the bug where it resets your zoom and center point when you change days. 
+                    It's a little fragile, so be gentle. If this ends up getting usage, I'll keep updating it. - Tripp
+                </p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    
+    
     <script>
 
         $(function(){

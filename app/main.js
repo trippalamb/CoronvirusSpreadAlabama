@@ -49,6 +49,11 @@ function main(){
 
             });
 
+            $(window).on("resize", () =>{
+                dateHeader = getDateHeader();
+                redrawPlot(csv, counties, dateHeader, max);
+            });
+
         });
     });
 }
@@ -112,8 +117,10 @@ function drawPlot(csv, counties, dateHeader, max){
 function redrawPlot(csv, counties, dateHeader, max){
 
     data = buildData(csv, counties, dateHeader, max);
+    var layout = gd.layout;
+    layout.title = "Alabama Coronavirus County Map [" + dateHeader + "]";
 
-    Plotly.react('container', data , gd.layout, {responsize:true});
+    Plotly.react('container', data , layout, {responsize:true});
     
 }
 
@@ -128,13 +135,16 @@ function buildData(csv, counties, dateHeader, max){
     }
     else{
         csv.forEach((row)=>{
-            var n = row[dateHeader];
+            var n = parseInt(row[dateHeader]);
             zmax = (n > zmax) ? n : zmax;
         });
     }
 
 
     var values = csv.map((row) => row[dateHeader]);
+    csv.forEach((row) => {
+        $("#" + row.County.replace(" ", "-") + "-Row").find("td").text(row[dateHeader]);
+    });
 
     var data = [{
         type: 'choroplethmapbox',
