@@ -225,9 +225,10 @@ function drawPlot(csv, counties, dateHeader, max) {
     var lat = 32.5;
     var lon = -86.9023;
     var zoom = 6.0;
+    var title = dateHeader.slice(dateHeader.indexOf("-") + 1);
 
     var layout = {
-        title: "Alabama Coronavirus County Map [" + dateHeader + "]",
+        title: "Alabama Coronavirus County Map [" + title + "]",
         autosize: true,
         showLegend: true,
         mapbox: {
