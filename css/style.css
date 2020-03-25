@@ -30,6 +30,22 @@ div#county-data{
     display:inline-block;
 }
 
-#toolbar{
-    margin: 0 auto;
+#countyModal .modal-dialog{
+    width:80%;
+    margin-top:10%
+}
+
+@media (min-width: 992px) {
+  .modal-dialog {
+    max-width: 80%;
+  }
+}
+
+div#county-plot{
+    height:600px;
+    margin-top:30px;
+}
+
+tr.btn-county{
+    cursor:pointer;
 }
