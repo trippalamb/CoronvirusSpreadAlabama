@@ -6,29 +6,30 @@ function main() {
     Plotly.d3.json('http://trippalamb.com/coronavirus-spread-alabama/AlabamaCounties.json', function (counties) {
 
         Plotly.d3.csv('http://trippalamb.com/coronavirus-spread-alabama/AlabamaCounties_TotalCases.csv', function (err, csv) {
+        //Plotly.d3.csv('http://localhost:3000/AlabamaCounties_TotalCases.csv', function (err, csv) {
 
-            var numberOfDays = Object.keys(csv[0]).length - 5;
+            var numberOfDays = Object.keys(csv[0]).filter((a)=> a.indexOf("cases-") !== -1).length;
             $("#date-slider").attr('max', numberOfDays);
             $("#date-slider").val(numberOfDays);
 
 
             var max = 0;
-            var h = getYesterdayDateHeader();
+            var h = "cases-" + getYesterdayDateHeader();
             csv.forEach((row) => {
                 var n = parseInt(row[h]);
                 max = (n > max) ? n : max;
             });
 
-            var dateHeader = getDateHeader();
+            var dateHeader = "cases-" + getDateHeader();
             drawPlot(csv, counties, dateHeader, max);
 
             $("#date-slider").on("change", function () {
-                dateHeader = getDateHeader();
+                dateHeader = "cases-" + getDateHeader();
                 redrawPlot(csv, counties, dateHeader, max);
             });
 
             $("input[name='radio-scale']").on("change", function () {
-                dateHeader = getDateHeader();
+                dateHeader = "cases-" + getDateHeader();
                 redrawPlot(csv, counties, dateHeader, max);
             });
 
@@ -58,7 +59,7 @@ function main() {
             });
 
             $(window).on("resize", () => {
-                dateHeader = getDateHeader();
+                dateHeader = "cases-" + getDateHeader();
                 redrawPlot(csv, counties, dateHeader, max);
             });
 
@@ -71,6 +72,15 @@ function countyModalLogic(name, csv, counties) {
     $("#countyModal").find("h5.modal-title").text(name);
     var cd = getCountyData(name, csv);
 
+    $("#Pop-Row td").text(cd.population);
+    $("#Density-Row td").text(cd.density + " Persons / mile^2");
+    $("#Case-Row td").text(cd.cases);
+    $("#New-Cases-Row td").text(cd.newCases);
+    $("#Infected-Row td").text(Math.round(cd.percentInfected*1000)/1000 + "%");
+    $("#Death-Row td").text(cd.deaths);
+    $("#New-Deaths-Row td").text(cd.newDeaths);
+    $("#Growth-Row td").text(Math.round(cd.growthRate*100)/100);
+
     var geojson = "https://raw.githubusercontent.com/johan/world.geo.json/master/countries/USA/AL/" + name + ".geo.json";
     Plotly.d3.json(geojson, function (county) {
         var data = [{
@@ -79,7 +89,7 @@ function countyModalLogic(name, csv, counties) {
             lon: [NaN]
         }];
 
-        var zoom = 8.2;
+        var zoom = 7.5;
 
 
         var layout = {
@@ -121,12 +131,47 @@ function countyModalLogic(name, csv, counties) {
 
 function getCountyData(name, csv){
     var d = csv.filter((r) => r.County === name)[0];
+    var h = getPrevDateHeader(1)
+    var prevH = getPrevDateHeader(2);
+    var caseHeader = "cases-" + h;
+    var prevCaseHeader = "cases-" + prevH;
+    var deathHeader = "deaths-" + h;
+    var prevDeathHeader = "deaths-" + prevH;
+    var deaths = (typeof(d[deathHeader]) !== "undefined") ? parseFloat(d[deathHeader]) : 0;
+    var prevDeaths = (typeof(d[prevDeathHeader]) !== "undefined") ? parseFloat(d[prevDeathHeader]) : 0;
+
+    var population = parseFloat(d.Population);
+    var cases = parseFloat(d[caseHeader]);
+    var percentInfected = (cases/population)*100;
+    var newCases = cases - parseFloat(d[prevCaseHeader]);
+    var newDeaths = deaths - prevDeaths;
+
+    var growthRate = calcAvgGrowthRate(d);
+
     return {
-        population:parseFloat(d.Population),
+        population:population,
         density:parseFloat(d.Density),
         latitude:parseFloat(d.Latitude),
-        longitude:parseFloat(d.Longitude)
+        longitude:parseFloat(d.Longitude),
+        cases:cases,
+        percentInfected: percentInfected,
+        newCases:newCases,
+        deaths:deaths,
+        prevDeathHeader:newDeaths,
+        growthRate:growthRate
     };
+}
+
+function calcAvgGrowthRate(d){
+    var keys = Object.keys(d).filter((k) => k.indexOf("cases-") !== -1);
+    var vals = keys.map((k) => parseFloat(d[k]));
+    var growths = [];
+    for(var i = 0; i<(vals.length - 1); i++){
+        if(vals[i] === 0){growths[i] = 0;}
+        else{growths[i] = vals[i+1]/vals[i];}
+    }
+    return growths.reduce((a, c) => a + c)/growths.length;
+    
 }
 
 function getDateHeader() {
@@ -156,6 +201,19 @@ function getYesterdayDateHeader() {
     d = (d > 9) ? "" + d : "0" + d;
 
     return yesterday.getFullYear() + "-" + month + "-" + d;
+}
+
+function getPrevDateHeader(back) {
+    var today = new Date();
+
+    var prevDay = new Date(today.getTime() - (back*24 * 60 * 60 * 1000));
+
+    var month = prevDay.getMonth() + 1;
+    month = (month > 9) ? "" + month : "0" + month;
+    var d = prevDay.getDate();
+    d = (d > 9) ? "" + d : "0" + d;
+
+    return prevDay.getFullYear() + "-" + month + "-" + d;
 }
 
 function drawPlot(csv, counties, dateHeader, max) {
