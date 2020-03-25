@@ -21,8 +21,8 @@ function main() {
                 max = (n > max) ? n : max;
             });
 
-            // var dateHeader = "cases-" + getDateHeader();
-            var dateHeader = casesHeaders[numberOfDays-1];
+             var dateHeader = "cases-" + getDateHeader();
+            //var dateHeader = casesHeaders[numberOfDays-1];
             drawPlot(csv, counties, dateHeader, max);
 
             $("#date-slider").on("change", function () {
@@ -250,7 +250,8 @@ function redrawPlot(csv, counties, dateHeader, max) {
 
     data = buildData(csv, counties, dateHeader, max);
     var layout = gd.layout;
-    layout.title = "Alabama Coronavirus County Map [" + dateHeader + "]";
+    var title = dateHeader.slice(dateHeader.indexOf("-") + 1);
+    layout.title = "Alabama Coronavirus County Map [" + title + "]";
     Plotly.react(gd, data, layout, { responsize: true });
 
 }
