@@ -8,7 +8,8 @@ function main() {
         Plotly.d3.csv('http://trippalamb.com/coronavirus-spread-alabama/AlabamaCounties_TotalCases.csv', function (err, csv) {
         //Plotly.d3.csv('http://localhost:3000/AlabamaCounties_TotalCases.csv', function (err, csv) {
 
-            var numberOfDays = Object.keys(csv[0]).filter((a)=> a.indexOf("cases-") !== -1).length;
+            var casesHeaders = Object.keys(csv[0]).filter((a)=> a.indexOf("cases-") !== -1)
+            var numberOfDays = casesHeaders.length;
             $("#date-slider").attr('max', numberOfDays);
             $("#date-slider").val(numberOfDays);
 
@@ -20,7 +21,8 @@ function main() {
                 max = (n > max) ? n : max;
             });
 
-            var dateHeader = "cases-" + getDateHeader();
+            // var dateHeader = "cases-" + getDateHeader();
+            var dateHeader = casesHeaders[numberOfDays-1];
             drawPlot(csv, counties, dateHeader, max);
 
             $("#date-slider").on("change", function () {
