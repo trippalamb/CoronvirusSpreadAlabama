@@ -23,7 +23,7 @@ http.get('http://alabamapublichealth.gov/infectiousdiseases/2019-coronavirus.htm
           d[county] = cases;
       });
 
-      var h = getDateHeader();
+      var h = "Cases-" + getDateHeader();
       var csv = readCsvSync("./AlabamaCounties_TotalCases.csv");
       csv.forEach((r)=>{
           if(typeof(d[r.County]) === "undefined"){r[h] = 0;}
