@@ -127,8 +127,8 @@ function buildData(csv, counties, dateHeader, max){
         zmax = max;
     }
     else{
-        console.log(maxType);
         csv.forEach((row)=>{
+            var n = row[dateHeader];
             zmax = (n > zmax) ? n : zmax;
         });
     }
