@@ -1,7 +1,4 @@
-var m_lat = 0.0;
-var m_lon = 0.0;
-var m_zoom = 6.0;
-var plot;
+var gd;
 
 function main(){
 
@@ -89,9 +86,9 @@ function drawPlot(csv, counties, dateHeader, max){
 
 
     data = buildData(csv, counties, dateHeader, max);
-    m_lat = 32.5;
-    m_lon = -86.9023;
-    m_zoom = 6.0;
+    var lat = 32.5;
+    var lon = -86.9023;
+    var zoom = 6.0;
 
     var layout =  {
         title: "Alabama Coronavirus County Map [" + dateHeader + "]",
@@ -100,42 +97,23 @@ function drawPlot(csv, counties, dateHeader, max){
         mapbox: {
             style: "open-street-map",
             center: {
-                lat: m_lat,
-                lon: m_lon
+                lat: lat,
+                lon: lon
             },
-            zoom:m_zoom
+            zoom:zoom
         }
     }
 
+    gd = document.getElementById('container');
+    Plotly.newPlot(gd, data , layout, {responsize:true});
 
-
-    m_plot = Plotly.newPlot('container', data , layout, {responsize:true});
-
-    console.log(m_plot);
-    
 }
 
 function redrawPlot(csv, counties, dateHeader, max){
 
-
     data = buildData(csv, counties, dateHeader, max);
 
-    var layout =  {
-        title: "Alabama Coronavirus County Map [" + dateHeader + "]",
-        autosize:true,
-        showLegend:true,
-        mapbox: {
-            style: "open-street-map",
-            center: {
-                lat: m_lat,
-                lon: m_lon
-            },
-            zoom:m_zoom
-        }
-    }
-
-
-    Plotly.react('container', data , layout, {responsize:true});
+    Plotly.react('container', data , gd.layout, {responsize:true});
     
 }
 
