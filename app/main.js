@@ -169,8 +169,7 @@ function calcAvgGrowthRate(d){
     var vals = keys.map((k) => parseFloat(d[k]));
     var growths = [];
     for(var i = 0; i<(vals.length - 1); i++){
-        if(vals[i] === 0){growths[i] = 0;}
-        else{growths[i] = vals[i+1]/vals[i];}
+        if(vals[i] !== 0){growths.push(vals[i+1]/vals[i]);}
     }
     return growths.reduce((a, c) => a + c)/growths.length;
     
