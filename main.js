@@ -1,3 +1,8 @@
+var m_lat = 0.0;
+var m_lon = 0.0;
+var m_zoom = 6.0;
+var plot;
+
 function main(){
 
     Plotly.d3.json('http://trippalamb.com/coronavirus-spread-alabama/AlabamaCounties.json', function(counties) {
@@ -17,11 +22,16 @@ function main(){
             });
 
             var dateHeader = getDateHeader();
-            drawPlot(csv, counties, false, dateHeader, max);
+            drawPlot(csv, counties, dateHeader, max);
 
             $("#date-slider").on("change", function(){
                 dateHeader = getDateHeader();
-                drawPlot(csv, counties, true, dateHeader, max);
+                redrawPlot(csv, counties, dateHeader, max);
+            });
+
+            $("input[name='radio-scale']").on("change", function(){
+                dateHeader = getDateHeader();
+                redrawPlot(csv, counties, dateHeader, max);
             });
 
             $("#move-back").on("click", function(){
@@ -41,6 +51,7 @@ function main(){
                 $("#date-slider").trigger("change");
 
             });
+
         });
     });
 }
@@ -74,36 +85,76 @@ function getYesterdayDateHeader(){
     return yesterday.getFullYear() + "-" + month + "-" + d;
 }
 
-function drawPlot(csv, counties, redraw, dateHeader, max){
+function drawPlot(csv, counties, dateHeader, max){
 
-        var data = buildData(csv, counties, dateHeader, max)
 
-        var layout =  {
-            title: "Alabama Coronavirus County Map [" + dateHeader + "]",
-            autosize:true,
-            showLegend:true,
-            mapbox: {
-                style: "open-street-map",
-                center: {
-                  lat: 32.5,
-                  lon: -86.9023
-                },
-                zoom:6.0 
-            }
-        }
+    data = buildData(csv, counties, dateHeader, max);
+    m_lat = 32.5;
+    m_lon = -86.9023;
+    m_zoom = 6.0;
 
-        if(redraw){
-            Plotly.react('container', data , layout, {responsize:true});
+    var layout =  {
+        title: "Alabama Coronavirus County Map [" + dateHeader + "]",
+        autosize:true,
+        showLegend:true,
+        mapbox: {
+            style: "open-street-map",
+            center: {
+                lat: m_lat,
+                lon: m_lon
+            },
+            zoom:m_zoom
         }
-        else{
-            Plotly.newPlot('container', data , layout, {responsize:true});
+    }
+
+
+
+    m_plot = Plotly.newPlot('container', data , layout, {responsize:true});
+
+    console.log(m_plot);
+    
+}
+
+function redrawPlot(csv, counties, dateHeader, max){
+
+
+    data = buildData(csv, counties, dateHeader, max);
+
+    var layout =  {
+        title: "Alabama Coronavirus County Map [" + dateHeader + "]",
+        autosize:true,
+        showLegend:true,
+        mapbox: {
+            style: "open-street-map",
+            center: {
+                lat: m_lat,
+                lon: m_lon
+            },
+            zoom:m_zoom
         }
+    }
+
+
+    Plotly.react('container', data , layout, {responsize:true});
     
 }
 
 function buildData(csv, counties, dateHeader, max){
 
     var data = [];
+    var zmax = 0;
+
+    var maxType = $('input[name="radio-scale"]:checked').val();
+    if(maxType === "totalScale"){
+        zmax = max;
+    }
+    else{
+        console.log(maxType);
+        csv.forEach((row)=>{
+            zmax = (n > zmax) ? n : zmax;
+        });
+    }
+
 
     var values = csv.map((row) => row[dateHeader]);
 
@@ -113,7 +164,7 @@ function buildData(csv, counties, dateHeader, max){
         geojson: counties,
         z:values,
         zmin:0,
-        zmax:max,
+        zmax:zmax,
         featureidkey:"properties.name",
 	marker:{
 	    opacity:0.5
