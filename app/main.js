@@ -184,9 +184,9 @@ function getDateHeader() {
     var day = new Date(today.getTime() - millisecondsAgo);
 
     var month = day.getMonth() + 1;
-    month = (month > 9) ? "" + month : "0" + month;
+    //month = (month > 9) ? "" + month : "0" + month;
     var d = day.getDate();
-    d = (d > 9) ? "" + d : "0" + d;
+    //d = (d > 9) ? "" + d : "0" + d;
 
     return day.getFullYear() + "-" + month + "-" + d;
 }
@@ -197,9 +197,9 @@ function getYesterdayDateHeader() {
     var yesterday = new Date(today.getTime() - (24 * 60 * 60 * 1000));
 
     var month = yesterday.getMonth() + 1;
-    month = (month > 9) ? "" + month : "0" + month;
+    //month = (month > 9) ? "" + month : "0" + month;
     var d = yesterday.getDate();
-    d = (d > 9) ? "" + d : "0" + d;
+    //d = (d > 9) ? "" + d : "0" + d;
 
     return yesterday.getFullYear() + "-" + month + "-" + d;
 }
@@ -210,9 +210,9 @@ function getPrevDateHeader(back) {
     var prevDay = new Date(today.getTime() - (back*24 * 60 * 60 * 1000));
 
     var month = prevDay.getMonth() + 1;
-    month = (month > 9) ? "" + month : "0" + month;
+    //month = (month > 9) ? "" + month : "0" + month;
     var d = prevDay.getDate();
-    d = (d > 9) ? "" + d : "0" + d;
+    //d = (d > 9) ? "" + d : "0" + d;
 
     return prevDay.getFullYear() + "-" + month + "-" + d;
 }
