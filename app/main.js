@@ -173,6 +173,7 @@ function calcAvgGrowthRate(d){
     }
     if(growths.length === 0){
         return 0.0;
+    }
     else{
         return growths.reduce((a, c) => a + c)/growths.length;
     }
