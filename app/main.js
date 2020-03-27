@@ -171,7 +171,11 @@ function calcAvgGrowthRate(d){
     for(var i = 0; i<(vals.length - 1); i++){
         if(vals[i] !== 0){growths.push(vals[i+1]/vals[i]);}
     }
-    return growths.reduce((a, c) => a + c)/growths.length;
+    if(growths.length === 0){
+        return 0.0;
+    else{
+        return growths.reduce((a, c) => a + c)/growths.length;
+    }
     
 }
 
